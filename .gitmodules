@@ -1,0 +1,3 @@
+[submodule "xcspp"]
+	path = xcspp
+	url = https://github.com/m4saka/xcspp.git
