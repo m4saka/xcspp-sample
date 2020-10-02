@@ -1,5 +1,5 @@
 # xcspp-sample
-This is a minimum working sample that uses the xcspp library (https://github.com/m4saka/xcspp).
+This is a minimal working sample that uses the xcspp library (https://github.com/m4saka/xcspp).
 As an example, this program solves 6-bit Multiplexer Problem, but you can replace it with your own class.
 
 Compatible with: Linux/Windows/macOS
