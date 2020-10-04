@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <xcspp/xcspp.hpp>
+#include <xcspp/util/csv.hpp>
 #include <xcspp/environment/multiplexer_environment.hpp>
 
 int main()
@@ -13,7 +14,7 @@ int main()
     xcspp::XCS xcs({ 0, 1 } /* Available actions */, params);
 
     // Environment (i.e., the problem to solve)
-    xcspp::MultiplexerEnvironment env(6);
+    xcspp::DatasetEnvironment env(xcspp::CSV::ReadDataset("dataset.csv"), { 0, 1 });
 
     // Train
     for (int i = 0; i < 50000; ++i)
