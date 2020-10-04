@@ -54,7 +54,7 @@ int main()
 
     // Show acquired rules
     std::cout << "Acquired Rules:" << std::endl;
-    xcs.dumpPopulation(std::cout);
+    xcs.outputPopulationCSV(std::cout);
 
     return 0;
 }
