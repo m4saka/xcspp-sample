@@ -8,11 +8,11 @@ int main()
     xcspp::XCSParams params;
     params.n = 1200; // N (max number of classifiers)
 
-    // XCS classifier system
-    xcspp::XCS xcs({ 0, 1 } /* Available actions */, params);
-
     // Environment (i.e., the problem to solve)
-    xcspp::DatasetEnvironment env(xcspp::CSV::ReadDataset("dataset.csv"), { 0, 1 });
+    xcspp::DatasetEnvironment env(xcspp::CSV::ReadDataset("dataset.csv"));
+
+    // XCS classifier system
+    xcspp::XCS xcs(env.availableActions(), params);
 
     // Train
     for (int i = 0; i < 50000; ++i)
