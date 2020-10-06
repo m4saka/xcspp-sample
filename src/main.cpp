@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <xcspp/xcspp.hpp>
-#include <xcspp/util/csv.hpp>
-#include <xcspp/environment/multiplexer_environment.hpp>
 
 int main()
 {
