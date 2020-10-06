@@ -6,16 +6,18 @@ int main()
 {
     // XCS hyperparameters
     xcspp::XCSParams params;
-    params.n = 1200; // N (max number of classifiers)
+    params.n = 1000; // N (max number of classifiers)
 
     // Environment (i.e., the problem to solve)
     xcspp::DatasetEnvironment env(xcspp::CSV::ReadDatasetFromFile("dataset.csv"));
+    std::cout << "'dataset.csv' has been loaded." << std::endl;
 
     // XCS classifier system
     xcspp::XCS xcs(env.availableActions(), params);
 
     // Train
-    for (int i = 0; i < 50000; ++i)
+    std::cout << "Training..." << std::endl;
+    for (int i = 0; i < 100000; ++i)
     {
         // Get current situation from environment
         std::vector<int> situation = env.situation();
@@ -31,29 +33,50 @@ int main()
     }
 
     // Test
-    double rewardSum = 0.0;
-    for (int i = 0; i < 50000; ++i)
+    std::cout << "Testing..." << std::endl;
     {
-        // Get current situation from environment
-        std::vector<int> situation = env.situation();
+        double rewardSum = 0.0;
+        for (int i = 0; i < 100000; ++i)
+        {
+            // Get current situation from environment
+            std::vector<int> situation = env.situation();
 
-        // Select action by XCS
-        int action = xcs.exploit(situation);
+            // Select action by XCS
+            int action = xcs.exploit(situation);
 
-        // Execute action and receive reward from environment
-        rewardSum += env.executeAction(action);
+            // Execute action and receive reward from environment
+            rewardSum += env.executeAction(action);
+        }
+
+        // Calculate average accuracy of test results
+        double rewardAverage = rewardSum / 100000;
+
+        std::cout << "=========================================================" << std::endl;
+        std::cout << "Test Classification Accuracy (100,000 times): " << (rewardAverage / 10.0) << '%' << std::endl;
+        std::cout << "=========================================================" << std::endl;
     }
 
-    // Calculate average accuracy of test results
-    double rewardAverage = rewardSum / 50000;
+    // Save classifier.csv
+    xcs.savePopulationCSVFile("classifier.csv");
+    std::cout << "Acquired ruleset has been saved to 'classifier.csv'." << std::endl;
 
-    std::cout << "=========================================" << std::endl;
-    std::cout << "Classification Accuracy: " << (rewardAverage / 10.0) << '%' << std::endl;
-    std::cout << "=========================================" << std::endl;
+    // Estimation
+    {
+        auto situations = xcspp::CSV::LoadCSVFile<int>("new_data.csv");
+        std::cout << "'new_data.csv' has been loaded." << std::endl;
 
-    // Show acquired rules
-    std::cout << "Acquired Rules:" << std::endl;
-    xcs.outputPopulationCSV(std::cout);
+        // Choose the best action for each situation
+        for (auto & situation : situations)
+        {
+            int action = xcs.exploit(situation);
+            situation.push_back(action);
+        }
+
+        // Save CSV file
+        xcspp::CSV::SaveCSVFile("estimation_result.csv", situations);
+
+        std::cout << "Estimation result has been saved to 'estimation_result.csv'." << std::endl;
+    }
 
     return 0;
 }
