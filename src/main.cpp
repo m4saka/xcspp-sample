@@ -12,59 +12,23 @@ int main()
     const std::string classifierOutputFilename = "classifier.csv";
     const std::string estimationResultOutputFilename = "estimation_result.csv";
 
+    // Experimental settings
+    xcspp::ExperimentSettings settings;
+    settings.outputSummaryToStdout = true;
+
     // XCS hyperparameters
     xcspp::XCSParams params;
     params.n = 1200; // N (max number of classifiers)
 
-    // Environment (i.e., the problem to solve)
-    xcspp::DatasetEnvironment env(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
-    std::cout << '\'' << datasetInputFilename << "' has been loaded." << std::endl;
+    // Initialize experiment and environment
+    xcspp::XCSExperimentHelper helper(settings, params);
+    helper.constructEnvironments<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
 
-    // XCS classifier system
-    xcspp::XCS xcs(env.availableActions(), params);
-
-    // Train
-    std::cout << "Training..." << std::endl;
-    for (int i = 0; i < 100000; ++i)
-    {
-        // Get current situation from environment
-        std::vector<int> situation = env.situation();
-
-        // Select action by XCS
-        int action = xcs.explore(situation);
-
-        // Execute action and receive reward from environment
-        double reward = env.executeAction(action);
-
-        // Feedback the reward to XCS
-        xcs.reward(reward);
-    }
-
-    // Test
-    std::cout << "Testing..." << std::endl;
-    {
-        double rewardSum = 0.0;
-        for (int i = 0; i < 100000; ++i)
-        {
-            // Get current situation from environment
-            std::vector<int> situation = env.situation();
-
-            // Select action by XCS
-            int action = xcs.exploit(situation);
-
-            // Execute action and receive reward from environment
-            rewardSum += env.executeAction(action);
-        }
-
-        // Calculate average accuracy of test results
-        double rewardAverage = rewardSum / 100000;
-
-        std::cout << "=========================================================" << std::endl;
-        std::cout << "Test Classification Accuracy (100,000 times): " << (rewardAverage / 10.0) << '%' << std::endl;
-        std::cout << "=========================================================" << std::endl;
-    }
+    // Run experiment (train & test)
+    helper.runIteration(100000);
 
     // Save classifier.csv
+    xcspp::XCS & xcs = helper.experiment(); // Get reference to the XCS instance in XCSExperimentHelper
     xcs.savePopulationCSVFile("classifier.csv");
     std::cout << "Acquired ruleset has been saved to 'classifier.csv'." << std::endl;
 
