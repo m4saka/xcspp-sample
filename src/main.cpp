@@ -4,13 +4,21 @@
 
 int main()
 {
+    // Input Filenames
+    const std::string datasetInputFilename = "dataset.csv";
+    const std::string newDataInputFilename = "new_data.csv";
+
+    // Output Filenames
+    const std::string classifierOutputFilename = "classifier.csv";
+    const std::string estimationResultOutputFilename = "estimation_result.csv";
+
     // XCS hyperparameters
     xcspp::XCSParams params;
-    params.n = 1000; // N (max number of classifiers)
+    params.n = 1200; // N (max number of classifiers)
 
     // Environment (i.e., the problem to solve)
-    xcspp::DatasetEnvironment env(xcspp::CSV::ReadDatasetFromFile("dataset.csv"));
-    std::cout << "'dataset.csv' has been loaded." << std::endl;
+    xcspp::DatasetEnvironment env(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
+    std::cout << '\'' << datasetInputFilename << "' has been loaded." << std::endl;
 
     // XCS classifier system
     xcspp::XCS xcs(env.availableActions(), params);
@@ -62,8 +70,8 @@ int main()
 
     // Estimation
     {
-        auto situations = xcspp::CSV::LoadCSVFile<int>("new_data.csv");
-        std::cout << "'new_data.csv' has been loaded." << std::endl;
+        auto situations = xcspp::CSV::LoadCSVFile<int>(newDataInputFilename);
+        std::cout << '\'' << newDataInputFilename << "' has been loaded." << std::endl;
 
         // Choose the best action for each situation
         for (auto & situation : situations)
@@ -73,9 +81,9 @@ int main()
         }
 
         // Save CSV file
-        xcspp::CSV::SaveCSVFile("estimation_result.csv", situations);
+        xcspp::CSV::SaveCSVFile(estimationResultOutputFilename, situations);
 
-        std::cout << "Estimation result has been saved to 'estimation_result.csv'." << std::endl;
+        std::cout << "Estimation result has been saved to '" << estimationResultOutputFilename << "'." << std::endl;
     }
 
     return 0;
