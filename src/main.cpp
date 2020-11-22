@@ -15,20 +15,25 @@ int main()
     // Experimental settings
     xcspp::ExperimentSettings settings;
     settings.outputSummaryToStdout = true;
+    
+    // Initialize helper
+    xcspp::ExperimentHelper helper(settings);
 
     // XCS hyperparameters
     xcspp::XCSParams params;
     params.n = 1200; // N (max number of classifiers)
 
-    // Initialize experiment and environment
-    xcspp::XCSExperimentHelper helper(settings, params);
-    helper.constructEnvironments<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
+    // Construct Enviroments
+    const auto & trainEnv = helper.constructExplorationEnvironment<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
+    const auto & testEnv = helper.constructExploitationEnvironment<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
+
+    // Construct XCS and get reference to it
+    auto & xcs = helper.constructClassifierSystem<xcspp::XCS>(trainEnv.availableActions(), params);
 
     // Run experiment (train & test)
     helper.runIteration(100000);
 
     // Save classifier.csv
-    xcspp::XCS & xcs = helper.experiment(); // Get reference to the XCS instance in XCSExperimentHelper
     xcs.savePopulationCSVFile("classifier.csv");
     std::cout << "Acquired ruleset has been saved to 'classifier.csv'." << std::endl;
 
