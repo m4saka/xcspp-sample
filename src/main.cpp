@@ -24,11 +24,11 @@ int main()
     params.n = 1200; // N (max number of classifiers)
 
     // Construct Enviroments
-    const auto & trainEnv = helper.constructExplorationEnvironment<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
-    const auto & testEnv = helper.constructExploitationEnvironment<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
+    const auto & trainEnv = helper.constructTrainEnv<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
+    const auto & testEnv = helper.constructTestEnv<xcspp::DatasetEnvironment>(xcspp::CSV::ReadDatasetFromFile(datasetInputFilename));
 
     // Construct XCS and get reference to it
-    auto & xcs = helper.constructClassifierSystem<xcspp::XCS>(trainEnv.availableActions(), params);
+    auto & xcs = helper.constructSystem<xcspp::XCS>(trainEnv.availableActions(), params);
 
     // Run experiment (train & test)
     helper.runIteration(100000);
